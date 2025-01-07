@@ -1,5 +1,6 @@
 version: "1.0"
 services:
+
   mariadb:
     image: mariadb:10.11
     container_name: mariadb-container
@@ -9,6 +10,7 @@ services:
       MARIADB_ROOT_PASSWORD: senha123
     volumes:
       - ./mariadb/:/var/lib/mysql
+
   phpmyadmin:
     image: phpmyadmin:5.2
     container_name: phpmyadmin-container
@@ -19,3 +21,17 @@ services:
       - PMA_HOST=db
     depends_on:
       - mariadb
+  
+  nodejs:
+    build: ./nodejs
+    container_name: nodejs-container
+    restart: always
+    depends_on:
+      - mariadb
+    ports:
+      - "3000:3000" # Expondo a porta do Node.js
+    working_dir: /usr/src/app
+    volumes:
+      - ./nodejs:/usr/src/app
+      - /usr/src/app/node_modules # Preserva os módulos instalados no container
+    command: npm run dev
